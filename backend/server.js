@@ -18,6 +18,9 @@ const { expireStaleAppointments } = require('./utils/bookingLifecycle')
 
 const app = express()
 const PORT = process.env.PORT || 3001
+const staticDir = process.env.STATIC_DIR ? path.resolve(process.env.STATIC_DIR) : null
+
+app.set('trust proxy', 1)
 
 app.use((_req, res, next) => {
   const sendJson = res.json.bind(res)
@@ -36,7 +39,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff')
 }))
 
-app.get('/', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ mensagem: 'Servidor BarberConnect funcionando!' })
 })
 
@@ -50,6 +53,15 @@ app.use('/servicos', servicosRoutes)
 app.use('/agenda', agendaRoutes)
 app.use('/favoritos', favoritosRoutes)
 app.use('/notificacoes', notificacoesRoutes)
+
+// Em hospedagem, frontend e API compartilham o mesmo domínio. Assim o usuário
+// precisa somente abrir o link, sem instalar Node, VS Code ou PostgreSQL.
+if (staticDir) {
+  app.use(express.static(staticDir))
+  app.get('/*splat', (_req, res) => res.sendFile(path.join(staticDir, 'index.html')))
+} else {
+  app.get('/', (_req, res) => res.json({ mensagem: 'Servidor BarberConnect funcionando!' }))
+}
 
 app.use((_req, res) => res.status(404).json({ sucesso: false, erro: 'Rota não encontrada.' }))
 

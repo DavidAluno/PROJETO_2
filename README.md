@@ -60,6 +60,20 @@ npm run dev
 
 5. Abra a URL mostrada pelo Vite, normalmente `http://localhost:5173`.
 
+## Apresentar em qualquer computador (sem instalar nada)
+
+O projeto está preparado para funcionar como **um único site hospedado**: frontend, API e PostgreSQL ficam no servidor. Nos computadores da escola, basta abrir o link público no navegador; não é necessário instalar Node.js, VS Code, PostgreSQL nem alterar permissões da máquina.
+
+### Publicação uma vez
+
+1. No Render, escolha **New + → Blueprint** e conecte o repositório `DavidAluno/PROJETO_2`.
+2. O arquivo `render.yaml` cria o serviço web e o PostgreSQL gerenciado. Não cadastre senhas no repositório: `JWT_SECRET` é gerado pela plataforma.
+3. Ao fim da publicação, copie a URL `https://...onrender.com` e use-a na apresentação.
+
+O serviço executa as migrações na inicialização e publica o React junto da API no mesmo domínio. Por isso não há CORS, URL de API ou configuração extra para os computadores visitantes.
+
+> Para uma demonstração local sem instalar Node.js/PostgreSQL, quem tiver Docker pode executar `docker compose up --build` e abrir `http://localhost:3001`.
+
 ## Validações
 
 ```powershell

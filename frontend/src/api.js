@@ -1,4 +1,5 @@
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+// Localmente a API roda em 3001; na hospedagem ela compartilha o mesmo domínio.
+export const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3001' : '')
 
 export function mediaUrl(url) {
   if (!url) return ''

@@ -1,0 +1,30 @@
+services:
+  banco:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: barberconnect
+      POSTGRES_USER: barberconnect
+      POSTGRES_PASSWORD: barberconnect_local
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U barberconnect -d barberconnect"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      banco:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://barberconnect:barberconnect_local@banco:5432/barberconnect
+      JWT_SECRET: troque-esta-chave-em-qualquer-ambiente-publico
+      PORT: 3001
+      STATIC_DIR: /app/backend/public
+    ports:
+      - "3001:3001"
+
+volumes:
+  postgres_data:
