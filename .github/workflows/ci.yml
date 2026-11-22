@@ -1,0 +1,70 @@
+name: BarberConnect CI
+
+on:
+  push:
+    branches: [main, 'feat/**']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend - lint, build e audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npm audit --omit=dev
+
+  backend:
+    name: Backend - banco e E2E
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: barberconnect_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d barberconnect_ci"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: barberconnect_ci
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: barberconnect-ci-only-secret
+      PORT: 3001
+      FRONTEND_ORIGIN: http://localhost:5173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run db:init
+      - run: npm start > /tmp/barberconnect-api.log 2>&1 &
+      - run: node -e "const check=async()=>{for(let i=0;i<30;i++){try{const r=await fetch('http://localhost:3001/');if(r.ok)return;}catch{}await new Promise(r=>setTimeout(r,500))}process.exit(1)};check()"
+      - run: npm run test:e2e
+      - run: npm audit --omit=dev

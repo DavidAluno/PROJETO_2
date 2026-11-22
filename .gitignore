@@ -1,0 +1,18 @@
+# Dependências e builds locais
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Segredos e configuração de cada máquina
+**/.env
+**/.env.*
+!**/.env.example
+
+# Arquivos gerados em execução
+**/*.log
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Artefatos de ferramentas que não pertencem à aplicação entregue
+.agents/
+skills-lock.json

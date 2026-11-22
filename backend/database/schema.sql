@@ -1,0 +1,3 @@
+-- O esquema foi convertido para migrações numeradas.
+-- Execute `npm run db:init` para aplicar os arquivos em `database/migrations/`.
+-- Este arquivo existe somente como ponte de compatibilidade para referências antigas.
