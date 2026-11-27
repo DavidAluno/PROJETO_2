@@ -14,11 +14,12 @@ const MeusCortes = lazy(() => import("./pages/MeusCortes"));
 const AgendaBarbeiro = lazy(() => import("./pages/AgendaBarbeiro"));
 const Favoritos = lazy(() => import("./pages/Favoritos"));
 const Perfil = lazy(() => import("./pages/Perfil"));
+const Admin = lazy(() => import("./pages/Admin"));
 const NaoEncontrado = lazy(() => import("./pages/NaoEncontrado"));
 import { getUsuarioLogado } from "./api";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
-function RotaProtegida({ children, tipo }) {
+function RotaProtegida({ children, tipo, admin = false }) {
   const usuario = getUsuarioLogado();
 
   if (!usuario) {
@@ -34,6 +35,10 @@ function RotaProtegida({ children, tipo }) {
     );
   }
 
+  if (admin && !usuario.admin) {
+    return <Navigate to={usuario.tipo === "barbeiro" ? "/barbeiro" : "/mapa"} replace />;
+  }
+
   return children;
 }
 
@@ -45,6 +50,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/admin" element={<RotaProtegida admin><Admin /></RotaProtegida>} />
           <Route
             path="/meus-cortes"
             element={

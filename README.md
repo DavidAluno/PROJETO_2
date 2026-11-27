@@ -60,17 +60,34 @@ npm run dev
 
 5. Abra a URL mostrada pelo Vite, normalmente `http://localhost:5173`.
 
+> `npm run dev` verifica se as dependências existem antes de iniciar. Se alguém clonou o projeto sem `node_modules`, ele executa `npm ci` automaticamente. Isso resolve o erro de `nodemon` que existia antes; agora o modo de desenvolvimento usa `node --watch`, incluído no Node 20+. Ainda é necessário ter Node.js e internet para executar localmente.
+
 ## Apresentar em qualquer computador (sem instalar nada)
 
 O projeto está preparado para funcionar como **um único site hospedado**: frontend, API e PostgreSQL ficam no servidor. Nos computadores da escola, basta abrir o link público no navegador; não é necessário instalar Node.js, VS Code, PostgreSQL nem alterar permissões da máquina.
 
 ### Publicação uma vez
 
-1. No Render, escolha **New + → Blueprint** e conecte o repositório `DavidAluno/PROJETO_2`.
-2. O arquivo `render.yaml` cria o serviço web e o PostgreSQL gerenciado. Não cadastre senhas no repositório: `JWT_SECRET` é gerado pela plataforma.
-3. Ao fim da publicação, copie a URL `https://...onrender.com` e use-a na apresentação.
+1. Crie primeiro um banco PostgreSQL gratuito no Supabase e copie a conexão privada `DATABASE_URL`.
+2. No Render, escolha **New + → Blueprint** e conecte o repositório `DavidAluno/PROJETO_2`.
+3. Informe a `DATABASE_URL` na tela de variáveis. O arquivo `render.yaml` publica somente o serviço web no plano gratuito; não cria um banco Render nem registra senha no repositório.
+4. Ao fim da publicação, copie a URL `https://...onrender.com` e use-a na apresentação.
 
-O serviço executa as migrações na inicialização e publica o React junto da API no mesmo domínio. Por isso não há CORS, URL de API ou configuração extra para os computadores visitantes.
+O serviço executa as migrações na inicialização e publica o React junto da API no mesmo domínio. Por isso não há CORS, URL de API ou configuração extra para os computadores visitantes. O guia detalhado está em `docs/SUPABASE_RENDER_GRATIS.md`.
+
+### Como remover cadastros de teste
+
+1. No ambiente que hospeda o backend, defina `ADMIN_EMAILS` com o seu e-mail de login (mais de um e-mail pode ser separado por vírgulas).
+2. Saia e entre novamente; a opção **Admin** aparecerá na barra superior.
+3. A área permite remover uma barbearia específica ou apagar apenas os dados gerados pelo E2E (`Barbearia E2E ...` e contas `@example.test`).
+
+Para uma limpeza local sem abrir a interface, primeiro confira e depois confirme:
+
+```powershell
+cd backend
+npm run cleanup:test-data
+npm run cleanup:test-data -- --apply
+```
 
 > Para uma demonstração local sem instalar Node.js/PostgreSQL, quem tiver Docker pode executar `docker compose up --build` e abrir `http://localhost:3001`.
 
@@ -86,6 +103,9 @@ Com backend e PostgreSQL em execução, o teste de integração completo também
 
 ```powershell
 cd backend
+npm test
+# escolha uma senha temporária apenas para a execução do E2E
+$env:E2E_TEST_PASSWORD = 'uma-senha-temporaria-com-8-ou-mais-caracteres'
 npm run test:e2e
 ```
 

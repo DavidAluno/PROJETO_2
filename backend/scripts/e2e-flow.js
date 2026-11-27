@@ -6,7 +6,11 @@ const pool = require('../db')
 
 const baseUrl = process.env.TEST_API_URL || 'http://localhost:3001'
 const tag = `e2e-${Date.now()}`
-const password = 'SenhaDeTeste!2026'
+const password = process.env.E2E_TEST_PASSWORD
+
+if (!password || password.length < 8) {
+  throw new Error('Defina E2E_TEST_PASSWORD com pelo menos 8 caracteres antes de executar o teste E2E.')
+}
 const ids = {}
 
 async function request(path, options = {}) {

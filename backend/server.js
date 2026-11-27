@@ -13,6 +13,7 @@ const servicosRoutes = require('./routes/servicos')
 const agendaRoutes = require('./routes/agenda')
 const favoritosRoutes = require('./routes/favoritos')
 const notificacoesRoutes = require('./routes/notificacoes')
+const adminRoutes = require('./routes/admin')
 const { removeUploadedFile } = require('./utils/imageUpload')
 const { expireStaleAppointments } = require('./utils/bookingLifecycle')
 
@@ -53,6 +54,7 @@ app.use('/servicos', servicosRoutes)
 app.use('/agenda', agendaRoutes)
 app.use('/favoritos', favoritosRoutes)
 app.use('/notificacoes', notificacoesRoutes)
+app.use('/admin', adminRoutes)
 
 // Em hospedagem, frontend e API compartilham o mesmo domínio. Assim o usuário
 // precisa somente abrir o link, sem instalar Node, VS Code ou PostgreSQL.
@@ -76,12 +78,18 @@ app.use(async (erro, req, res, _next) => {
   return res.status(500).json({ sucesso: false, erro: 'Ocorreu um erro inesperado. Tente novamente.' })
 })
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`)
-})
+function startServer() {
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`)
+  })
 
-void expireStaleAppointments(pool).catch((error) => console.error('Falha ao expirar agendamentos:', error))
-const expirationTimer = setInterval(() => {
   void expireStaleAppointments(pool).catch((error) => console.error('Falha ao expirar agendamentos:', error))
-}, 60 * 1000)
-expirationTimer.unref()
+  const expirationTimer = setInterval(() => {
+    void expireStaleAppointments(pool).catch((error) => console.error('Falha ao expirar agendamentos:', error))
+  }, 60 * 1000)
+  expirationTimer.unref()
+}
+
+if (require.main === module) startServer()
+
+module.exports = app

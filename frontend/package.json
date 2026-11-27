@@ -8,6 +8,7 @@
     "npm": ">=10"
   },
   "scripts": {
+    "predev": "node scripts/ensure-dependencies.js",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",

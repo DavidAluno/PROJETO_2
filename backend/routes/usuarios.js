@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const pool = require('../db')
 const { loginLimiter, registerLimiter } = require('../middleware/rateLimiters')
+const { isConfiguredAdmin } = require('../middleware/admin')
 
 const SEGREDO = process.env.JWT_SECRET
 
@@ -83,7 +84,8 @@ router.post('/login', loginLimiter, async (req, res) => {
         id: usuario.id,
         nome: usuario.nome,
         email: usuario.email,
-        tipo: usuario.tipo
+        tipo: usuario.tipo,
+        admin: isConfiguredAdmin(usuario.email)
       }
     })
   } catch (erro) {

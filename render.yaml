@@ -2,21 +2,19 @@ services:
   - type: web
     name: barberconnect
     runtime: docker
+    plan: free
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: barberconnect-db
-          property: connectionString
+        sync: false
+      - key: DB_SSL
+        value: true
       - key: JWT_SECRET
         generateValue: true
+      - key: ADMIN_EMAILS
+        value: davidcostaalmeida3@gmail.com
       - key: NODE_ENV
         value: production
       - key: STATIC_DIR
         value: /app/backend/public
-
-databases:
-  - name: barberconnect-db
-    databaseName: barberconnect
-    user: barberconnect

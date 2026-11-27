@@ -53,6 +53,7 @@ jobs:
       DB_USER: postgres
       DB_PASSWORD: postgres
       JWT_SECRET: barberconnect-ci-only-secret
+      E2E_TEST_PASSWORD: teste-e2e-ci-nao-e-segredo-real
       PORT: 3001
       FRONTEND_ORIGIN: http://localhost:5173
     steps:
