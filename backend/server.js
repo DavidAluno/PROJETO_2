@@ -23,7 +23,7 @@ const staticDir = process.env.STATIC_DIR ? path.resolve(process.env.STATIC_DIR) 
 const cspDirectives = helmet.contentSecurityPolicy.getDefaultDirectives()
 
 // O mapa Leaflet carrega imagens somente destes provedores públicos.
-cspDirectives['img-src'] = ["'self'", 'data:', 'blob:', 'https://*.basemaps.cartocdn.com', 'https://*.tile.openstreetmap.org']
+cspDirectives['img-src'] = ["'self'", 'data:', 'blob:', 'https://*.tile.openstreetmap.org']
 cspDirectives['connect-src'] = ["'self'", 'https://nominatim.openstreetmap.org']
 
 app.set('trust proxy', 1)

@@ -14,11 +14,11 @@ test('GET /api/health informa que a API está disponível', async () => {
   assert.match(response.body.dados.mensagem, /funcionando/i)
 })
 
-test('CSP permite os tiles aprovados do mapa', async () => {
+test('CSP permite os tiles aprovados do OpenStreetMap', async () => {
   const response = await request(app).get('/api/health')
 
   assert.equal(response.status, 200)
-  assert.match(response.headers['content-security-policy'], /basemaps\.cartocdn\.com/)
+  assert.match(response.headers['content-security-policy'], /tile\.openstreetmap\.org/)
 })
 
 test('rota inexistente mantém o envelope de erro da API', async () => {
