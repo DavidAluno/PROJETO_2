@@ -20,6 +20,11 @@ const { expireStaleAppointments } = require('./utils/bookingLifecycle')
 const app = express()
 const PORT = process.env.PORT || 3001
 const staticDir = process.env.STATIC_DIR ? path.resolve(process.env.STATIC_DIR) : null
+const cspDirectives = helmet.contentSecurityPolicy.getDefaultDirectives()
+
+// O mapa Leaflet carrega imagens somente destes provedores públicos.
+cspDirectives['img-src'] = ["'self'", 'data:', 'blob:', 'https://*.basemaps.cartocdn.com', 'https://*.tile.openstreetmap.org']
+cspDirectives['connect-src'] = ["'self'", 'https://nominatim.openstreetmap.org']
 
 app.set('trust proxy', 1)
 
@@ -34,7 +39,12 @@ app.use((_req, res, next) => {
 })
 
 app.use(cors({ origin: process.env.FRONTEND_ORIGIN ? process.env.FRONTEND_ORIGIN.split(',') : ['http://localhost:5173', 'http://127.0.0.1:5173'] }))
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: {
+    directives: cspDirectives
+  }
+}))
 app.use(express.json())
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff')
