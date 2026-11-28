@@ -19,6 +19,7 @@ test('CSP permite os tiles aprovados do OpenStreetMap', async () => {
 
   assert.equal(response.status, 200)
   assert.match(response.headers['content-security-policy'], /tile\.openstreetmap\.org/)
+  assert.equal(response.headers['referrer-policy'], 'strict-origin-when-cross-origin')
 })
 
 test('rota inexistente mantém o envelope de erro da API', async () => {

@@ -23,7 +23,7 @@ const staticDir = process.env.STATIC_DIR ? path.resolve(process.env.STATIC_DIR) 
 const cspDirectives = helmet.contentSecurityPolicy.getDefaultDirectives()
 
 // O mapa Leaflet carrega imagens somente destes provedores públicos.
-cspDirectives['img-src'] = ["'self'", 'data:', 'blob:', 'https://*.tile.openstreetmap.org']
+cspDirectives['img-src'] = ["'self'", 'data:', 'blob:', 'https://tile.openstreetmap.org']
 cspDirectives['connect-src'] = ["'self'", 'https://nominatim.openstreetmap.org']
 
 app.set('trust proxy', 1)
@@ -40,6 +40,7 @@ app.use((_req, res, next) => {
 
 app.use(cors({ origin: process.env.FRONTEND_ORIGIN ? process.env.FRONTEND_ORIGIN.split(',') : ['http://localhost:5173', 'http://127.0.0.1:5173'] }))
 app.use(helmet({
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   crossOriginResourcePolicy: { policy: 'cross-origin' },
   contentSecurityPolicy: {
     directives: cspDirectives
